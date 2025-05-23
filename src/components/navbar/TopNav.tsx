@@ -4,9 +4,13 @@ import { GiMatchTip } from "react-icons/gi";
 import NavLink from "./NavLink";
 import { auth } from "@/auth";
 import { UserMenu } from "./UserMenu";
+// import { getAuthUserId } from "@/app/actions/authActions";
+import { getMemberByUserId } from "@/app/actions/memberActions";
 
 export default async function TopNav() {
     const session = await auth();
+    const userId = session?.user?.id;
+    const member = userId ? await getMemberByUserId(userId) : null;
   return (
     <Navbar 
         maxWidth="xl" 
@@ -33,7 +37,7 @@ export default async function TopNav() {
         </NavbarContent>
         <NavbarContent justify="end">
             {session?.user ? (
-                <UserMenu user={session.user}/>
+                <UserMenu user2={member}/>
             ) : (
                 <>
                     <Button as={Link} href="/login" variant='bordered' className='text-white'>Login</Button>
