@@ -2,7 +2,7 @@
 
 import clsx from 'clsx';
 import {Avatar} from '@heroui/avatar';
-import {transformImageUrl} from '@/lib/util';
+import {timeAgo, transformImageUrl} from '@/lib/util';
 import {useEffect, useRef} from 'react';
 import { MessageDto } from '@/types';
 
@@ -41,7 +41,7 @@ export default function MessageBox({message, currentUserId}: Props) {
             'justify-between': isCurrentUserSender,
         })}>
             {message.dateRead && message.recipientId !== currentUserId ? (
-                <span className='text-xs text-black text-italic'>(Read 4 mins ago)</span>
+                <span className='text-xs text-black text-italic'>(Read {timeAgo(message.dateRead)})</span>
             ) : <div />}
             <div className='flex'>
                 <span className='text-sm font-semibold text-gray-900'>{message.senderName}</span>

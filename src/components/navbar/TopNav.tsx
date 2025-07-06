@@ -1,5 +1,6 @@
 
-import { Button, Link, Navbar, NavbarBrand, NavbarContent } from "@nextui-org/react";
+import { Button, Link } from "@nextui-org/react";
+import { Navbar, NavbarBrand, NavbarContent } from '@heroui/navbar';
 import { GiMatchTip } from "react-icons/gi";
 import NavLink from "./NavLink";
 import { auth } from "@/auth";
