@@ -4,7 +4,7 @@ import usePresenceStore from "@/app/hooks/usePresenceStore";
 import { Avatar, Badge } from "@heroui/react";
 
 type Props = {
-    userId?: string;
+    userId?: string | null;
     src?: string | null;
 }
 

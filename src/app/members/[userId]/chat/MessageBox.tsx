@@ -1,31 +1,34 @@
 'use client';
 
 import clsx from 'clsx';
-import {Avatar} from '@heroui/avatar';
+// import {Avatar} from '@heroui/avatar';
+// import {Avatar} from '@heroui/react';
 import {timeAgo, transformImageUrl} from '@/lib/util';
 import {useEffect, useRef} from 'react';
 import { MessageDto } from '@/types';
-
+import PresenceAvatar from '@/components/PresenceAvatar';
 
 type Props = {
     message: MessageDto;
     currentUserId: string;
 }
 
-export default function MessageBox({message, currentUserId}: Props) {
+export default function MessageBox({ message, currentUserId }: Props) {
     const isCurrentUserSender = message.senderId === currentUserId;
     const messageEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (messageEndRef.current) messageEndRef.current.scrollIntoView({behavior: 'smooth'});
+        if (messageEndRef.current) messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }, [messageEndRef]);
 
     const renderAvatar = () => (
-         <Avatar
-            name={message.senderName}
-            className="self-end"
-            src={transformImageUrl(message.senderImage) || '/images/user.png'}
-        />
+        <div className='self-end'>
+            <PresenceAvatar
+                src={transformImageUrl(message.senderImage) || '/images/user.png'}
+                userId={message.senderId}
+            />
+        </div>
+
     );
 
     const messageContentClasses = clsx(
@@ -51,8 +54,8 @@ export default function MessageBox({message, currentUserId}: Props) {
     )
 
     const renderMessageContent = () => {
-       return <div className={messageContentClasses}>
-           {renderMessageHeader()}
+        return <div className={messageContentClasses}>
+            {renderMessageHeader()}
             <p className='text-sm py-3 text-gray-900'>{message.text}</p>
         </div>
     }

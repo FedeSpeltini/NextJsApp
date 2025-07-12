@@ -7,6 +7,7 @@ import { pusherClient } from '@/lib/pusher';
 import { useEffect } from 'react';
 import { formatShortDateTime } from '@/lib/util';
 import { Channel } from 'pusher-js';
+import useMessageStore from '@/app/hooks/useMessageStore';
 
 type Props = {
     initialMessages: {messages: MessageDto[], readCount: number}

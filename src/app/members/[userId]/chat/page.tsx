@@ -17,7 +17,7 @@ export default async function ChatPage({params}: {params: Promise<{userId: strin
         <CardInnerWraper
             header='Chat'
             body={<MessageList 
-                initalMessages={messages} 
+                initialMessages={messages} 
                 currentUserId={currentUserId}
                 chatId={chatId}
                 />
