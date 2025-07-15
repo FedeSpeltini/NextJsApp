@@ -18,13 +18,13 @@ export default async function Layout({children}: {children: ReactNode}) {
         
       ]
   return (
-    <div className='grid grid-cols-12 gap-5 h-[80vh]'>
-        <div className='col-span-3'>
+    <div className='grid grid-cols-1 md:grid-cols-12 gap-5 md:h-[80vh]'>
+        <div className='md:col-span-3'>
             <MemberSidebar member={member} navLinks={navLinks}/>
         </div>
-        <div className='col-span-9'>
-            <Card className='w-full mt-10 h-[80vh]'>
-                {children} 
+        <div className='md:col-span-9'>
+            <Card className='w-full mt-10 md:h-[80vh]'>
+                {children}
             </Card>
         </div>
     </div>

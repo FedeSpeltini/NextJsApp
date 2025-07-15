@@ -17,14 +17,14 @@ export default function MessageTable({ initialMessages, nextCursor }: Props) {
         messages, loadMore, loadingMore, hasMore } = useMessages(initialMessages, nextCursor);
 
     return (
-        <div className='flex flex-col h-[80vh]'>
+        <div className='flex flex-col md:h-[80vh]'>
             <Card>
                 <Table
                     aria-label='Table with messages'
                     selectionMode='single'
                     onRowAction={(key) => selectRow(key)}
                     shadow='none'
-                    className='flex flex-col gap-3 h-[80vh] overflow-auto'
+                    className='flex flex-col gap-3 md:h-[80vh] overflow-auto'
                 >
                     <TableHeader columns={columns}>
                         {(column) =>
