@@ -77,26 +77,39 @@ export async function setMainImage(photo: Photo){
 }
 
 export async function deleteImage(photo: Photo) {
- try {
+    try {
 
-    const userId = await getAuthUserId();
+        const userId = await getAuthUserId();
 
-    if(photo.publicId) {
-        await cloudinary.v2.uploader.destroy(photo.publicId);
-    }
-
-    return prisma.member.update({
-        where: {userId},
-        data:{
-            photos: {
-                delete: {id: photo.id}
-            }
+        if(photo.publicId) {
+            await cloudinary.v2.uploader.destroy(photo.publicId);
         }
-    })
+
+        return prisma.member.update({
+            where: {userId},
+            data:{
+                photos: {
+                    delete: {id: photo.id}
+                }
+            }
+        })
+        
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
     
- } catch (error) {
-    console.log(error);
-    throw error;
- }
-    
+}
+
+export async function getUserInfoForNav() {
+    try {
+        const userId = await getAuthUserId();
+        return prisma.user.findUnique({
+            where: {id: userId},
+            select: {name: true, image: true}
+        })
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
 }
