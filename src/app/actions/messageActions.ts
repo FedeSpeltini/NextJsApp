@@ -1,13 +1,14 @@
 'use server';
 
 import {messageSchema, MessageSchema} from '@/lib/schemas/messageSchema';
-import {Message} from '@prisma/client';
 import {getAuthUserId} from '@/app/actions/authActions';
 import {prisma} from '@/lib/prisma';
-import { ActionResult } from "@/types";
+import { pusherServer } from '@/lib/pusher';
+import { createChatId } from '@/lib/util';
+import { ActionResult, MessageDto } from '@/types';
 import { mapMessagetoMessageDto } from '@/lib/mappings';
 
-export async function createMessage(recipientUserId: string, data: MessageSchema): Promise<ActionResult<Message>> {
+export async function createMessage(recipientUserId: string, data: MessageSchema): Promise<ActionResult<MessageDto>> {
     try {
         const userId = await getAuthUserId();
 
@@ -22,10 +23,16 @@ export async function createMessage(recipientUserId: string, data: MessageSchema
                 text,
                 recipientId: recipientUserId,
                 senderId: userId
-            }
+            },
+            select: messageSelect
         });
 
-        return {status: 'success', data: message}
+        const messageDto = mapMessagetoMessageDto(message);
+
+        await pusherServer.trigger(createChatId(userId, recipientUserId), 'message:new', messageDto);
+        await pusherServer.trigger(`private-${recipientUserId}`, 'message:new', messageDto);
+
+        return {status: 'success', data: messageDto}
     } catch (error) {
         console.log(error);
         return {status: 'error', error: 'Something went wrong'};
@@ -54,47 +61,38 @@ export async function getMessageThread(recipientId: string) {
             orderBy: {
                 created: 'asc'
             },
-            select: {
-                id: true,
-                text: true,
-                created: true,
-                dateRead: true,
-                sender: {
-                    select: {
-                        userId: true,
-                        name: true,
-                        image: true
-                    }
-                },
-                recipient: {
-                    select: {
-                        userId: true,
-                        name: true,
-                        image: true
-                    }
-                }
-            }
+            select: messageSelect
         });
 
+        let readCount = 0;
+
         if (messages.length > 0) {
+            const readMessageIds = messages
+                .filter(m => m.dateRead === null
+                    && m.recipient?.userId === userId
+                    && m.sender?.userId === recipientId)
+                .map(m => m.id);
+
             await prisma.message.updateMany({
-                where: {
-                    senderId: recipientId,
-                    recipientId: userId,
-                    dateRead: null
-                },
+                where: {id: {in: readMessageIds}},
                 data: {dateRead: new Date()}
-            })
+            });
+
+            readCount = readMessageIds.length;
+
+            await pusherServer.trigger(createChatId(recipientId, userId), 'messages:read', readMessageIds);
         }
 
-        return messages.map(message => mapMessagetoMessageDto(message))
+        const messagesToReturn = messages.map(message => mapMessagetoMessageDto(message));
+
+        return {messages: messagesToReturn, readCount}
     } catch (error) {
         console.log(error);
         throw error;
     }
 }
 
-export async function getMessagesByContainer(container: string) {
+export async function getMessagesByContainer(container?: string | null, cursor?: string, limit = 10) {
     try {
         const userId = await getAuthUserId();
 
@@ -104,33 +102,29 @@ export async function getMessagesByContainer(container: string) {
         }
 
         const messages = await prisma.message.findMany({
-            where: conditions,
+            where: {
+                ...conditions,
+                ...(cursor ? {created: {lte: new Date(cursor)}} : {})
+            },
             orderBy: {
                 created: 'desc'
             },
-            select: {
-                id: true,
-                text: true,
-                created: true,
-                dateRead: true,
-                sender: {
-                    select: {
-                        userId: true,
-                        name: true,
-                        image: true
-                    }
-                },
-                recipient: {
-                    select: {
-                        userId: true,
-                        name: true,
-                        image: true
-                    }
-                }
-            }
+            select: messageSelect,
+            take: limit + 1
         });
 
-        return messages.map(message => mapMessagetoMessageDto(message));
+        let nextCursor: string | undefined;
+
+        if (messages.length > limit) {
+            const nextItem = messages.pop();
+            nextCursor = nextItem?.created.toISOString();
+        } else {
+            nextCursor = undefined;
+        }
+
+        const messagesToReturn = messages.map(message => mapMessagetoMessageDto(message));
+
+        return {messages: messagesToReturn, nextCursor}
     } catch (error) {
         console.log(error);
         throw error;
@@ -176,5 +170,43 @@ export async function deleteMessage(messageId: string, isOutbox: boolean) {
     } catch (error) {
         console.log(error);
         throw error;
+    }
+}
+
+export async function getUnreadMessageCount() {
+    try {
+        const userId = await getAuthUserId();
+
+        return prisma.message.count({
+            where: {
+                recipientId: userId,
+                dateRead: null,
+                recipientDeleted: false
+            }
+        })
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+const messageSelect = {
+    id: true,
+    text: true,
+    created: true,
+    dateRead: true,
+    sender: {
+        select: {
+            userId: true,
+            name: true,
+            image: true
+        }
+    },
+    recipient: {
+        select: {
+            userId: true,
+            name: true,
+            image: true
+        }
     }
 }

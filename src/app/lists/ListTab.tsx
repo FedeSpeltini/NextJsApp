@@ -53,7 +53,7 @@ export default function ListTab({ members, likeIds }: Props) {
                       <MemberCard
                         key={member.id}
                         member={member}
-                        likesIds={likeIds}
+                        likeIds={likeIds}
                       />
                     ))}
                   </div>

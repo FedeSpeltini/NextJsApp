@@ -14,20 +14,35 @@ import { fetchCurrentUserLikesIds, fetchLikedMembers } from '../actions/likeActi
 // }
 
 
-export default async function ListsPages({
-  searchParams,
-}: {
-  searchParams: Promise<{ type: string }>
-}) {
-  const [likesIds, { type }] = await Promise.all([fetchCurrentUserLikesIds(), searchParams])
+export default async function ListsPage({searchParams}
+    : {searchParams: Promise<{type: string}>}) {
+      
+    const {type} = await searchParams;
 
-  const members = await fetchLikedMembers(type)
+    const likeIds = await fetchCurrentUserLikesIds();
+    const members = await fetchLikedMembers(type);
 
-  return (
-    <div>
-      <ListTab members={members} likeIds={likesIds} />
-    </div>
-  )
+    return (
+        <div>
+            <ListTab members={members} likeIds={likeIds} />
+        </div>
+    );
 }
+
+// export default async function ListsPages({
+//   searchParams,
+// }: {
+//   searchParams: Promise<{ type: string }>
+// }) {
+//   const [likesIds, { type }] = await Promise.all([fetchCurrentUserLikesIds(), searchParams])
+
+//   const members = await fetchLikedMembers(type)
+
+//   return (
+//     <div>
+//       <ListTab members={members} likeIds={likesIds} />
+//     </div>
+//   )
+// }
 
 
