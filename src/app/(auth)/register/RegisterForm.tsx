@@ -30,7 +30,7 @@ export default function RegisterForm() {
     }
 
   return (
-    <Card className='w-2/5 mx-auto'>
+    <Card className='w-full max-w-md md:w-2/5 mx-auto'>
         <CardHeader className='flex flex-col items-center justify-center'>
             <div className='flex flex-col gap-2 items-center text-secondary'>
                     <div className='flex flex-row items-center gap-3'>

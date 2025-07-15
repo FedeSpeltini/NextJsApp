@@ -18,7 +18,7 @@ export default function Error({
  
   return (
     <div className='flex items-center justify-center vertical-center'>
-        <Card className='w-2/5 mx-auto'>
+        <Card className='w-full max-w-md md:w-2/5 mx-auto'>
             <CardHeader className='flex flex-col items-center justify-center'>
                 <div className='flex flex-row gap-2 items-center text-secondary'>
                     <BiSolidError size={30}/>
