@@ -9,7 +9,7 @@ export default function Filters() {
 
     return (
         <div className='shadow-md py-2'>
-            <div className="flex flex-row justify-around items-center">
+            <div className="flex flex-wrap justify-center items-center gap-4">
                 <div className="flex gap-2 items-center">
                     <div className="text-secondary font-semibold text-xl">
                         Results: {isPending ? <Spinner size='sm' color='secondary' /> : totalCount}
@@ -30,7 +30,7 @@ export default function Filters() {
                         </Button>
                     ))}
                 </div>
-                <div className="flex flex-row items-center gap-2 w-1/4">
+                <div className="flex flex-row items-center gap-2 w-full sm:w-1/4">
                     <Slider
                         aria-label="slider for age selection"
                         label="Age range"
@@ -51,7 +51,7 @@ export default function Filters() {
                         onChange={selectWithPhoto}
                     />
                 </div>
-                <div className="w-1/4">
+                <div className="w-full sm:w-1/4">
                     <Select
                         size="sm"
                         fullWidth
