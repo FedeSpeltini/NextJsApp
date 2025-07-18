@@ -40,8 +40,17 @@ export default function TopNav({userInfo}: Props) {
             menu: [
               "bg-gradient-to-b from-purple-400 to-purple-700",
               "backdrop-blur-md",
-              "w-full",
-              "max-w-full"
+              "!w-72", // Ancho fijo en lugar de w-full
+              "!max-w-72", // Máximo ancho
+              "!right-0", // Alineado a la derecha
+              "!left-auto", // Anula el left por defecto
+              "!top-16", // Posición desde el top
+              "!h-screen", // Altura completa de la pantalla
+              "!max-h-screen", // Altura máxima de la pantalla
+              "rounded-l-lg", // Bordes redondeados en la izquierda
+              "shadow-lg", // Sombra
+              "!absolute", // Posición absoluta
+              "!z-50" // Z-index alto
             ],
           }}
           isMenuOpen={isMenuOpen}
@@ -116,13 +125,13 @@ export default function TopNav({userInfo}: Props) {
             />
           </NavbarContent>
 
-          {/* Menú móvil */}
-          <NavbarMenu className="pt-6 w-full max-w-full">
-            <div className="flex flex-col gap-2 w-full">
+          {/* Menú móvil - Ahora más compacto y a la derecha */}
+          <NavbarMenu className="pt-4 px-4">
+            <div className="flex flex-col gap-1">
               <NavbarMenuItem>
                 <Link
                   href="/members"
-                  className="w-full text-white text-lg py-3 px-4 hover:bg-white/20 rounded-lg transition-colors block"
+                  className="w-full text-white text-base py-2 px-3 hover:bg-white/20 rounded-md transition-colors block"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Matches
@@ -131,7 +140,7 @@ export default function TopNav({userInfo}: Props) {
               <NavbarMenuItem>
                 <Link
                   href="/lists"
-                  className="w-full text-white text-lg py-3 px-4 hover:bg-white/20 rounded-lg transition-colors block"
+                  className="w-full text-white text-base py-2 px-3 hover:bg-white/20 rounded-md transition-colors block"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Lists
@@ -140,7 +149,7 @@ export default function TopNav({userInfo}: Props) {
               <NavbarMenuItem>
                 <Link
                   href="/messages"
-                  className="w-full text-white text-lg py-3 px-4 hover:bg-white/20 rounded-lg transition-colors block"
+                  className="w-full text-white text-base py-2 px-3 hover:bg-white/20 rounded-md transition-colors block"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Messages
@@ -150,13 +159,13 @@ export default function TopNav({userInfo}: Props) {
               {/* Botones de autenticación en móvil */}
               {!userInfo && (
                 <>
-                  <NavbarMenuItem className="mt-4">
+                  <NavbarMenuItem className="mt-3">
                     <Button 
                       as={Link} 
                       href={'/login'} 
                       variant={'bordered'} 
                       className={'text-white border-white hover:bg-white hover:text-purple-600 w-full'}
-                      size="md"
+                      size="sm"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Login
@@ -168,7 +177,7 @@ export default function TopNav({userInfo}: Props) {
                       href={'/register'} 
                       variant={'solid'}
                       className={'bg-white text-purple-600 hover:bg-gray-100 w-full'}
-                      size="md"
+                      size="sm"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Register
@@ -179,6 +188,15 @@ export default function TopNav({userInfo}: Props) {
             </div>
           </NavbarMenu>
         </Navbar>
+        
+        {/* Overlay para cerrar el menú al hacer clic fuera */}
+        {isMenuOpen && (
+          <div 
+            className="fixed inset-0 bg-black/20 z-40 md:hidden"
+            onClick={() => setIsMenuOpen(false)}
+          />
+        )}
+        
         <FiltersWrapper />
       </div>
     );
