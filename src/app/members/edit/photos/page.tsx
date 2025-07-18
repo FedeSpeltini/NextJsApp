@@ -5,7 +5,6 @@ import React from 'react'
 import MemberPhotoUpload from './MemberPhotoUpload';
 import MemberPhotos from '@/components/MemberPhotos';
 
-
 export default async function PhotosPage() {
     const userId = await getAuthUserId();
     const member = await getMemberByUserId(userId);
@@ -13,14 +12,14 @@ export default async function PhotosPage() {
 
   return (
     <>
-      <CardHeader className="flex flex-row justify-between item-center">
-        <div className="text-2xl font-semibold text-secondary">
+      <CardHeader className="flex flex-col sm:flex-row justify-between gap-4 sm:gap-0 sm:items-center">
+        <div className="text-xl sm:text-2xl font-semibold text-secondary text-center sm:text-left">
           Edit Profile
         </div>
         <MemberPhotoUpload />
       </CardHeader>
       <Divider />
-      <CardBody>
+      <CardBody className="p-3 sm:p-6">
         <MemberPhotos
           photos={photos}
           editing={true}

@@ -14,8 +14,6 @@ type Props = {
 }
 
 export default function MemberPhotos({photos, editing, mainImageUrl} : Props) {
-
-
     const router = useRouter();
     const [loading, setLoading] = useState({
         type:'',
@@ -40,7 +38,7 @@ export default function MemberPhotos({photos, editing, mainImageUrl} : Props) {
     }
 
   return (
-    <div className="grid grid-cols-5 gap-3 p-5">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 p-2 sm:p-4">
       {photos &&
         photos.map((photo) => (
           <div key={photo.id} className="relative">
@@ -49,7 +47,7 @@ export default function MemberPhotos({photos, editing, mainImageUrl} : Props) {
               <>
                 <div
                   onClick={() => onSetMain(photo)}
-                  className="absolute top-3 left-3 z-50"
+                  className="absolute top-2 left-2 z-50"
                 >
                   <StarButton
                     selected={photo.url === mainImageUrl}
@@ -62,12 +60,12 @@ export default function MemberPhotos({photos, editing, mainImageUrl} : Props) {
                 </div>
                 <div
                   onClick={() => onDelete(photo)}
-                  className="absolute top-3 right-3 z-50"
+                  className="absolute top-2 right-2 z-50"
                 >
                   <DeleteButton
                     loading={
                       loading.isLoading &&
-                      loading.type === "main" &&
+                      loading.type === "delete" &&
                       loading.id === photo.id
                     }
                   />
