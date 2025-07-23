@@ -2,11 +2,13 @@
 import { Photo } from '@prisma/client';
 import { CldImage } from 'next-cloudinary';
 import React, { useEffect } from 'react';
-import { AiOutlineClose } from 'react-icons/ai';
+import { AiOutlineClose, AiOutlineLeft, AiOutlineRight } from 'react-icons/ai';
 
 type Props = {
   photo: Photo | null;
   onClose: () => void;
+  onNext?: () => void;
+  onPrev?: () => void;
 };
 
 const isVideo = (src?: string | null) => {
@@ -14,14 +16,14 @@ const isVideo = (src?: string | null) => {
   return /\.(mp4|webm|ogg)$/i.test(src);
 };
 
-export default function MediaViewer({ photo, onClose }: Props) {
+export default function MediaViewer({ photo, onClose, onNext, onPrev }: Props) {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [onClose]);
+  }, [onClose, onNext, onPrev]);
 
   // Prevenir scroll del body cuando el modal está abierto
   useEffect(() => {
@@ -56,6 +58,34 @@ export default function MediaViewer({ photo, onClose }: Props) {
           className="text-white"
         />
       </button>
+
+            {/* Flecha izquierda */}
+      {onPrev && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onPrev();
+          }}
+          className="absolute left-4 z-10 p-2 rounded-full bg-black/50 hover:bg-black/70 transition-colors"
+          aria-label="Previous media"
+        >
+          <AiOutlineLeft size={24} className="text-white" />
+        </button>
+      )}
+
+      {/* Flecha derecha */}
+      {onNext && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onNext();
+          }}
+          className="absolute right-4 z-10 p-2 rounded-full bg-black/50 hover:bg-black/70 transition-colors"
+          aria-label="Next media"
+        >
+          <AiOutlineRight size={24} className="text-white" />
+        </button>
+      )}
       
       {/* Contenedor del media */}
       <div
