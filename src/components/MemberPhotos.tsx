@@ -16,7 +16,7 @@ type Props = {
 
 export default function MemberPhotos({photos, editing, mainImageUrl} : Props) {
     const router = useRouter();
-    const [viewerPhoto, setViewerPhoto] = useState<Photo | null>(null);
+    const [viewerIndex, setViewerIndex] = useState<number | null>(null);
     const [loading, setLoading] = useState({
         type:'',
         isLoading: false,
@@ -43,8 +43,8 @@ export default function MemberPhotos({photos, editing, mainImageUrl} : Props) {
     <>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 p-2 sm:p-4">
         {photos &&
-          photos.map((photo) => (
-            <div key={photo.id} className="relative" onClick={() => setViewerPhoto(photo)}>
+          photos.map((photo, index) => (
+            <div key={photo.id} className="relative" onClick={() => setViewerIndex(index)}>
               <MemberImage photo={photo} />
               {editing && (
                 <>
@@ -78,7 +78,20 @@ export default function MemberPhotos({photos, editing, mainImageUrl} : Props) {
             </div>
           ))}
       </div>
-      <MediaViewer photo={viewerPhoto} onClose={() => setViewerPhoto(null)} />
+            <MediaViewer
+        photo={viewerIndex !== null && photos ? photos[viewerIndex] : null}
+        onClose={() => setViewerIndex(null)}
+        onNext={() =>
+          viewerIndex !== null && photos
+            ? setViewerIndex((viewerIndex + 1) % photos.length)
+            : undefined
+        }
+        onPrev={() =>
+          viewerIndex !== null && photos
+            ? setViewerIndex((viewerIndex - 1 + photos.length) % photos.length)
+            : undefined
+        }
+      />
     </>
   );
 }
