@@ -19,12 +19,14 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body>
+      <body className="overflow-x-hidden w-full">
         <Providers userId={userId}>
-          <TopNav />
-          <main className='container mx-auto'>
-            {children}
-          </main>
+          <div className="w-full max-w-full">
+            <TopNav userInfo={session?.user}/>
+            <main className='container mx-auto px-4'>
+              {children}
+            </main>
+          </div>
         </Providers>
       </body>
     </html>
