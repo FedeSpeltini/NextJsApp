@@ -113,3 +113,26 @@ export async function getUserInfoForNav() {
         throw error;
     }
 }
+
+export async function updateMercadoPagoTokens(
+    userId: string, 
+    accessToken: string, 
+    refreshToken?: string,
+    mpUserId?: string
+) {
+    try {
+        const updatedUser = await prisma.user.update({
+            where: { id: userId },
+            data: {
+                mpAccessToken: accessToken,
+                mpRefreshToken: refreshToken,
+                mpUserId: mpUserId,
+            }
+        });
+        
+        return updatedUser;
+    } catch (error) {
+        console.log('Error updating MercadoPago tokens:', error);
+        throw error;
+    }
+}
