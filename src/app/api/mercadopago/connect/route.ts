@@ -1,25 +1,46 @@
-import { auth } from "@/auth";
-import { NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
+import { auth } from '@/auth';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET() {
+import { updateMercadoPagoTokens } from '@/app/actions/userActions';
+import { getAuthorizationUrl, exchangeCodeForToken } from '@/lib/mercadopago';
+
+export async function GET(request: NextRequest) {
   const session = await auth();
-  if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!session?.user?.id) {
+    return new Response('Unauthorized', { status: 401 });
+  }
 
-  const state = jwt.sign(
-    { uid: session.user.id, n: crypto.randomUUID() },
-    process.env.MP_STATE_SECRET!,
-    { expiresIn: "10m" }
-  );
+  // NUEVA SECCIÓN: Manejar callback de MercadoPago
+  const searchParams = request.nextUrl.searchParams;
+  const code = searchParams.get('code');
+  
+  if (code) {
+    // Es un callback - procesar el código
+    try {
+      const tokenData = await exchangeCodeForToken(code);
 
-  const params = new URLSearchParams({
-    response_type: "code",
-    client_id: process.env.MP_CLIENT_ID!,
-    redirect_uri: process.env.MP_REDIRECT_URI!, // Debe ser EXACTA
-    state,
-    // scope si aplica: "offline_access read write"
-  });
+      if (!tokenData.access_token) {
+        throw new Error('No access token received from MercadoPago');
+      }
+      await updateMercadoPagoTokens(
+        session.user.id,
+        tokenData.access_token,
+        tokenData.refresh_token,
+        tokenData.user_id?.toString(),
+      );
 
-  const url = `https://auth.mercadopago.com/authorization?${params.toString()}`;
-  return NextResponse.json({ url });
+      return NextResponse.redirect(new URL('/members/edit/photos?success=connected', request.url));
+    } catch (error) {
+      console.error('MercadoPago callback error:', error);
+      return NextResponse.redirect(new URL('/members/edit/photos?error=connection_failed', request.url));
+    }
+  }
+
+  try {
+    const url = getAuthorizationUrl();
+    return NextResponse.json({ url });
+  } catch (error) {
+    console.error('Error generating authorization URL:', error);
+    return new Response('Internal Server Error', { status: 500 });
+  }
 }
