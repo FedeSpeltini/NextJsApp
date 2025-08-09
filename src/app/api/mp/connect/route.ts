@@ -21,16 +21,16 @@ export async function GET(request: NextRequest) {
         state,
         tokenData.access_token,
         tokenData.refresh_token,
-        tokenData.user_id?.toString(),
+        tokenData.user_id?.toString()
       );
 
       return NextResponse.redirect(
-        new URL('/members/edit/photos?success=connected', request.url),
+        new URL('/members/edit/photos?success=connected', request.url)
       );
     } catch (error) {
       console.error('MercadoPago callback error:', error);
       return NextResponse.redirect(
-        new URL('/members/edit/photos?error=connection_failed', request.url),
+        new URL('/members/edit/photos?error=connection_failed', request.url)
       );
     }
   }
