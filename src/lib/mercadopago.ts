@@ -6,11 +6,12 @@ export const mercadopago = new MercadoPagoConfig({
 });
 
 // Generate authorization URL for OAuth flow
-export function getAuthorizationUrl() {
+export function getAuthorizationUrl(state: string) {
   return new OAuth(mercadopago).getAuthorizationURL({
     options: {
       client_id: process.env.NEXT_PUBLIC_MP_CLIENT_ID!,
       redirect_uri: process.env.MP_REDIRECT_URI!,
+      state,
     },
   });
 }
